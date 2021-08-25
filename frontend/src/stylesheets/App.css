@@ -1,0 +1,9 @@
+.App {
+  margin: 250px;
+  margin-top: 50px;
+}
+
+.topnav {
+  background-color: rgb(250, 195, 82);
+  overflow: hidden;
+}

@@ -3,8 +3,12 @@ from flask import Flask, request, abort, jsonify
 from flask_cors import CORS
 import requests
 from urllib.parse import urlencode
+import os
+from dotenv import load_dotenv
 
-URL = 'https://api.nal.usda.gov/fdc/v1/foods/search?api_key=DEMO_KEY'
+API_KEY = os.getenv('API_KEY')
+URL = f'https://api.nal.usda.gov/fdc/v1/foods/search?api_key={API_KEY}'
+
 def create_app(test_config=None):
     app = Flask(__name__)
     CORS(app)
@@ -12,22 +16,21 @@ def create_app(test_config=None):
     def get_payload(request):
         page = request.args.get('page', 1, type=int)
         body = request.get_json()
-        print("FULLFOOD", body['food'])
         return (
             {
-                "query": "description:" + body['food'],
-                "dataType": [
-                    "Branded"
+                'query': ('description:' + body['food'] if body['food'] != '' else '') + (' foodCategory:' + body['category'] if  body['category'] != '' else ''),
+                'dataType': [
+                    'Branded'
                 ],
-                "pageSize": 25,
-                "pageNumber": page,
-                "sortBy": "dataType.keyword",
-                "sortOrder": "asc",
-                "requireAllWords": True,
-                "ingredients": " ".join(
-                    list(map(lambda x: "+" + x.upper(), body['includeList'])) + 
-                    list(map(lambda x: "-" + x.upper(), body['excludeList']))
-                )
+                'pageSize': 25,
+                'pageNumber': page,
+                'sortBy': 'dataType.keyword',
+                'sortOrder': 'asc',
+                'requireAllWords': True,
+                'ingredients': ' '.join(
+                    list(map(lambda x: '+' + x.upper(), body['includeList'])) + 
+                    list(map(lambda x: '-' + x.upper(), body['excludeList']))
+                ),             
             }
         )
 
@@ -42,7 +45,7 @@ def create_app(test_config=None):
                             'description': food['description'] if 'description' in food else "",
                             'brandOwner': food['brandOwner'] if 'brandOwner' in food else "",
                             'brandName': food['brandName'] if 'brandName' in food else "",  
-                            'ingredients': food['ingredients'] if 'ingredients' in food else "",
+                            'ingredients': food['ingredients'].upper() if 'ingredients' in food else "",
                             'gtinUpc': food['gtinUpc'] if 'gtinUpc' in food else "",
                         }
                     )
@@ -50,14 +53,13 @@ def create_app(test_config=None):
 
     @app.route('/food', methods=['POST'])
     def search_food():
-        body = request.get_json()
         payload = get_payload(request)
         r = requests.post(URL, json=payload)
-        print("RESPONSE", r)
         if r.status_code == 200:
             return jsonify({
                 'success': True,
-                'data': parse_food_response(r.json())
+                'data': parse_food_response(r.json()),
+                'totalHits': r.json()['totalHits']
             })
         else:
             abort(404)
@@ -65,7 +67,7 @@ def create_app(test_config=None):
     @app.errorhandler(404)
     def not_found(error):
         return jsonify({
-            'succcess': False,
+            'success': False,
             'error': 404,
             'message': 'resources not found'
         }), 404
