@@ -18,7 +18,7 @@ def create_app(test_config=None):
         body = request.get_json()
         return (
             {
-                'query': ('description:' + body['food'] if body['food'] != '' else '') + (' foodCategory:' + body['category'] if  body['category'] != '' else ''),
+                'query': ('description:' + '"' + body['food'] + '"' if body['food'] != '' else '') + (' foodCategory:' + body['category'] if  body['category'] != '' else ''),
                 'dataType': [
                     'Branded'
                 ],
@@ -59,7 +59,7 @@ def create_app(test_config=None):
             return jsonify({
                 'success': True,
                 'data': parse_food_response(r.json()),
-                'totalHits': r.json()['totalHits']
+                'totalHits': r.json()['totalHits'] if r.json()['totalHits'] <= 10000 else 10000
             })
         else:
             abort(404)
