@@ -1,6 +1,7 @@
 import React from 'react';
 import '../stylesheets/result.css'
 
+
 class DisplayResult extends React.Component {
     formatResult() {
         return this.props.result.map((x, index) => {
@@ -17,9 +18,7 @@ class DisplayResult extends React.Component {
     render() {
         return(
             <div id="result">
-                Result {this.props.resultTotal > 0 ? this.props.resultTotal : ""} <br />
-                Product Name | Brand Name | Brand Owner | UPC
-                <hr />
+                {/* Result {this.props.resultTotal > 0 ? this.props.resultTotal : ""} | Stats <br /> */}
                 <div>
                     {this.props.resultFound ? this.formatResult() : "No products found"}
                 </div>

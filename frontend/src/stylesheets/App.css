@@ -7,3 +7,15 @@
   background-color: rgb(250, 195, 82);
   overflow: hidden;
 }
+
+.noStyleButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: monospace;
+    margin: 0;
+}
+
+body {
+  font-family: monospace;
+}

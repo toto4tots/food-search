@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { DisplayResult } from './displayResult'
 import { CATEGORY_NAMES } from '../constants/categories'
 import '../stylesheets/search.css'
+import { ResultArea } from './resultArea';
 
 const RESULT_PER_PAGE = 25; 
 
@@ -24,7 +24,7 @@ class SearchArea extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleClickPages = this.handleClickPages.bind(this);
+        this.updatePagination = this.updatePagination.bind(this);
         this.handleClear = this.handleClear.bind(this);
     }
 
@@ -125,10 +125,9 @@ class SearchArea extends React.Component {
         })
     }
 
-    handleClickPages(e) {
-        const button = e.target
+    updatePagination(value) {
         this.setState({
-            "page": +button.value
+            "page": value
         }, () => {
             this.getFoodData();
         });
@@ -139,12 +138,13 @@ class SearchArea extends React.Component {
         if (this.state.result.length > 0) {
             for (let i = 0; i < Math.ceil(this.state.resultTotal / RESULT_PER_PAGE ); i++) {
                 ret.push([
-                    <button className="pageButton" 
+                    <button className="noStyleButton" 
                             key={i}
-                            onClick={this.handleClickPages}
+                            onClick={(e) => { this.updatePagination(+e.target.value) }}
                             value={i + 1}
                             style={{color: this.state.page === i + 1 ? 'blue' : 'black'}}
-                    >{i + 1}
+                    >
+                        {i + 1}
                     </button>
                 ])
             }
@@ -176,7 +176,7 @@ class SearchArea extends React.Component {
                         />
                         <input type="button"
                             name="includeButton"
-                            value="set"
+                            value="add"
                             onClick={this.handleClick}
                         />
                         <input name='exclude'
@@ -187,7 +187,7 @@ class SearchArea extends React.Component {
                         />
                         <input type="button"
                             name="excludeButton"
-                            value="set"
+                            value="add"
                             onClick={this.handleClick}
                         /><br />
                         <select
@@ -209,13 +209,13 @@ class SearchArea extends React.Component {
                     </form>                    
                 </div>
                 <div>
-                    <DisplayResult result={this.state.result}
-                                resultFound={this.state.resultFound}
-                                resultTotal={this.state.resultTotal}
+                    <ResultArea result={this.state.result}
+                        resultFound={this.state.resultFound}
+                        resultTotal={this.state.resultTotal}
+                        displayPagination={this.displayPagination.bind(this)}
                     />
                     
                 </div>
-                {this.displayPagination()}
             </div>
         )
     }
