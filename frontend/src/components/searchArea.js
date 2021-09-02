@@ -42,6 +42,7 @@ class SearchArea extends React.Component {
                 'category': this.state.category === "Any" ? "" : this.state.category,
                 'includeList': this.state.includeList,
                 'excludeList': this.state.excludeList,
+                'pageSize': RESULT_PER_PAGE
             }),
             mode: 'cors',
         })
@@ -151,8 +152,34 @@ class SearchArea extends React.Component {
         }
         return ret
     }
+//                     <ResultArea result={this.state.result}
+//     resultFound={this.state.resultFound}
+//     resultTotal={this.state.resultTotal}
+//     displayPagination={this.displayPagination.bind(this)}
+// />
+    // body: JSON.stringify({
+    //     'food': this.state.food,
+    //     'category': this.state.category === "Any" ? "" : this.state.category,
+    //     'includeList': this.state.includeList,
+    //     'excludeList': this.state.excludeList,
+    //     'pageSize': RESULT_PER_PAGE
+    // }),
+
 
     render() {
+        const resultInfo = {
+            'result': this.state.result,
+            'resultFound': this.state.resultFound,
+            'resultTotal': this.state.resultTotal
+        }
+        const queryInfo = {
+            'food': this.state.food,
+            'category': this.state.category === "Any" ? "" : this.state.category,
+            'includeList': this.state.includeList,
+            'excludeList': this.state.excludeList,
+            'pageSize': RESULT_PER_PAGE
+        }
+
         return (
             <div>
                 <div id="title">
@@ -209,10 +236,9 @@ class SearchArea extends React.Component {
                     </form>                    
                 </div>
                 <div>
-                    <ResultArea result={this.state.result}
-                        resultFound={this.state.resultFound}
-                        resultTotal={this.state.resultTotal}
+                    <ResultArea resultInfo={resultInfo}
                         displayPagination={this.displayPagination.bind(this)}
+                        queryInfo={queryInfo}
                     />
                     
                 </div>

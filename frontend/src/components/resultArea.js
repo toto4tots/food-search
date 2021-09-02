@@ -1,6 +1,6 @@
 import React from "react"
 import { DisplayResult } from "./displayResult"
-import { DisplayStats } from "./displayStats"
+import { DisplayInfo } from "./displayInfo"
 
 class ResultArea extends React.Component {
     constructor(props) {
@@ -14,18 +14,15 @@ class ResultArea extends React.Component {
 
     getActive() {
         switch (this.state.active) {
-            case "Stats":
+            case "Info":
                 return (
-                    <DisplayStats result={this.props.result}
-                        resultFound={this.props.resultFound}
-                        resultTotal={this.props.resultTotal}
-                    />
+                    <DisplayInfo queryInfo={this.props.queryInfo}/>
                 )              
             default:
                 return (
-                    <DisplayResult result={this.props.result}
-                        resultFound={this.props.resultFound}
-                        resultTotal={this.props.resultTotal}
+                    <DisplayResult result={this.props.resultInfo.result}
+                        resultFound={this.props.resultInfo.resultFound}
+                        resultTotal={this.props.resultInfo.resultTotal}
                     />
                 )
         }
@@ -39,15 +36,15 @@ class ResultArea extends React.Component {
         })
     }
 
-    render() {
+    render() { 
         return(
             <div>
                 <button className="noStyleButton" name="ResultButton" onClick={this.handleClick}>Result</button> 
-                {this.props.resultTotal > 0 ? this.props.resultTotal : ""} | 
-                <button className="noStyleButton" name="StatsButton" onClick={this.handleClick}>Stats</button>
+                {this.props.resultInfo.resultTotal > 0 ? this.props.resultInfo.resultTotal : ""} | 
+                <button className="noStyleButton" name="InfoButton" onClick={this.handleClick}>Info</button>
                 < hr />
                 {
-                    this.props.resultTotal > 0 && this.state.active === "Result" ? 
+                    this.props.resultInfo.resultTotal > 0 && this.state.active === "Result" ? 
                     "Product Name | Brand Name | Brand Owner | UPC" : 
                     ""
                 }

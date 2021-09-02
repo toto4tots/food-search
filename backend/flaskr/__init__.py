@@ -5,12 +5,25 @@ from urllib.parse import urlencode
 import os
 from dotenv import load_dotenv
 import re
+import math
 
 API_KEY = os.getenv('API_KEY')
 URL = f'https://api.nal.usda.gov/fdc/v1/foods/search?api_key={API_KEY}'
 
-def get_payload(request):
-    page = request.args.get('page', 1, type=int)
+
+def ingredient_counter(lst):
+    counter = {}
+    for ingredients in lst:
+        for ingredient in ingredients:
+            if ingredient in counter:
+                counter[ingredient] += 1
+            else:
+                counter[ingredient] = 1
+    return counter
+
+
+
+def get_payload(request, page):
     body = request.get_json()
     return (
         {
@@ -18,7 +31,7 @@ def get_payload(request):
             'dataType': [
                 'Branded'
             ],
-            'pageSize': 25,
+            'pageSize': body['pageSize'],
             'pageNumber': page,
             'sortBy': 'dataType.keyword',
             'sortOrder': 'asc',
@@ -43,6 +56,7 @@ def parse_food_response(data):
                         'brandName': food['brandName'] if 'brandName' in food else "",  
                         'ingredients': food['ingredients'].upper() if 'ingredients' in food else "",
                         'gtinUpc': food['gtinUpc'] if 'gtinUpc' in food else "",
+                        'brandCategory': food['brandCategory'] if 'brandCategory' in food else "",
                     }
                 )
     return ret
@@ -51,9 +65,8 @@ def get_ingredient_list(data):
     ret = []
     for food in data:    
         temp = re.sub(r'[^A-Za-z ]+', ',', food['ingredients'])
-        ret.append([f.strip() for f in temp.split(',') if f != ''])
-    print(ret)
-
+        ret.append(set(f.strip("* ") for f in temp.split(',') if f != ''))
+    return ret
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -61,7 +74,8 @@ def create_app(test_config=None):
 
     @app.route('/food', methods=['POST'])
     def search_food():
-        payload = get_payload(request)
+        page = request.args.get('page', 1, type=int)
+        payload = get_payload(request, page)
         r = requests.post(URL, json=payload)
         if r.status_code == 200:
             return jsonify({
@@ -71,13 +85,39 @@ def create_app(test_config=None):
             })
         else:
             abort(404)
+    
+    @app.route('/all', methods=['POST'])
+    def get_all():
+        # get all of the search result
+        page = 1
+        result = []
 
-    @app.route('/stats', methods=['POST'])
-    def get_stats():
-        # print(request.get_json()['foodData'])
-        get_ingredient_list(request.get_json()['foodData'])
+        while True:
+            payload = get_payload(request, page)
+            r = requests.post(URL, json=payload)
+            if r.status_code != 200:
+                abort(404)
+            r_json = r.json()
+            totalHits = r_json['totalHits'] if r_json['totalHits'] <= 10000 else 10000
+            result.extend(parse_food_response(r_json))
+            if page >= math.ceil(totalHits / 200):
+                break
+            page += 1     
+            
         return jsonify({
-            'success': True
+            'success': True,
+            'result': result,
+        })
+
+    @app.route('/info', methods=['POST'])
+    def get_info():
+        ingredient_list = get_ingredient_list(request.get_json())
+        counter = ingredient_counter(ingredient_list)
+        top_30 = list(sorted(counter.items(), key=lambda item: item[1]))[-30:][::-1]        
+
+        return jsonify({
+            'success': True,
+            'data': top_30
         })
     
     @app.errorhandler(404)
