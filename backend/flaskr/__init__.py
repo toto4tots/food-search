@@ -62,10 +62,22 @@ def parse_food_response(data):
     return ret
 
 def get_ingredient_list(data):
+    ingreds_with_invalid = []
     ret = []
+    removeList = ["", "FOLLOWING", "COLOR", "CONTAINS LESS THAN", "WITH", "INGREDIENTS", "LESS THAN", "ADDED", "CONTAINS", "OF", "OR", "LESS THAN", "WITH", "OF THE FOLLOWING", "OR LESS OF", "OR LESS OF THE FOLLOWING", "TO PROTECT FLAVOR"]
     for food in data:    
         temp = re.sub(r'[^A-Za-z ]+', ',', food['ingredients'])
-        ret.append(set(f.strip("* ") for f in temp.split(',') if f != ''))
+        ingreds_with_invalid.append(set(f.strip("* ") for f in temp.split(',')))
+
+    for entry in ingreds_with_invalid:
+        newEntry = []
+        for food in entry:
+            for invalid in removeList:
+                if food == invalid:
+                    break
+            else:
+                newEntry.append(food)
+        ret.append(newEntry)
     return ret
 
 def create_app(test_config=None):
