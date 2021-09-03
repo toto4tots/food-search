@@ -113,11 +113,11 @@ def create_app(test_config=None):
     def get_info():
         ingredient_list = get_ingredient_list(request.get_json())
         counter = ingredient_counter(ingredient_list)
-        top_30 = list(sorted(counter.items(), key=lambda item: item[1]))[-30:][::-1]        
+        top_50 = list(sorted(counter.items(), key=lambda item: item[1]))[-50:][::-1]        
 
         return jsonify({
             'success': True,
-            'data': top_30
+            'data': { 'common': top_50 }
         })
     
     @app.errorhandler(404)
