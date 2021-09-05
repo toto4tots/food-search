@@ -1,6 +1,7 @@
 import React from "react"
 import { DisplayResult } from "./displayResult"
 import { DisplayInfo } from "./displayInfo"
+import '../stylesheets/result.css'
 
 class ResultArea extends React.Component {
     constructor(props) {
@@ -44,7 +45,7 @@ class ResultArea extends React.Component {
                 <button className="noStyleButton" name="InfoButton" onClick={this.handleClick}>Info</button>
                 < hr />
                 {
-                    this.props.resultInfo.resultTotal > 0 && this.state.active === "Result" ? 
+                    this.props.resultInfo.resultTotal > 0 && this.state.active === "Result" ?
                     "Product Name | Brand Name | Brand Owner | UPC" : 
                     ""
                 }

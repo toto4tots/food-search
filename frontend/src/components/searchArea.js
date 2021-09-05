@@ -19,7 +19,8 @@ class SearchArea extends React.Component {
             page: 1,
             result: [],
             resultFound: true,
-            resultTotal: 0
+            resultTotal: 0,
+            submitClicked: false
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleClick = this.handleClick.bind(this);
@@ -62,9 +63,13 @@ class SearchArea extends React.Component {
     handleSubmit(e) {
         e.preventDefault();
         this.setState({
-            page: 1
+            page: 1,
+            submitClicked: false
         }, () => {
             this.getFoodData();
+            this.setState({
+                submitClicked: true
+            })
         });
     }
 
@@ -77,7 +82,10 @@ class SearchArea extends React.Component {
             page: 1,
             result: [],
             resultFound: true,
-            resultTotal: 0
+            resultTotal: 0,
+            submitClicked: false,
+            include: '',
+            exclude: '',
         });
     }
 
@@ -152,25 +160,13 @@ class SearchArea extends React.Component {
         }
         return ret
     }
-//                     <ResultArea result={this.state.result}
-//     resultFound={this.state.resultFound}
-//     resultTotal={this.state.resultTotal}
-//     displayPagination={this.displayPagination.bind(this)}
-// />
-    // body: JSON.stringify({
-    //     'food': this.state.food,
-    //     'category': this.state.category === "Any" ? "" : this.state.category,
-    //     'includeList': this.state.includeList,
-    //     'excludeList': this.state.excludeList,
-    //     'pageSize': RESULT_PER_PAGE
-    // }),
-
 
     render() {
         const resultInfo = {
             'result': this.state.result,
             'resultFound': this.state.resultFound,
-            'resultTotal': this.state.resultTotal
+            'resultTotal': this.state.resultTotal,
+            'submitClicked': this.state.submitClicked
         }
         const queryInfo = {
             'food': this.state.food,
@@ -236,11 +232,12 @@ class SearchArea extends React.Component {
                     </form>                    
                 </div>
                 <div>
-                    <ResultArea resultInfo={resultInfo}
-                        displayPagination={this.displayPagination.bind(this)}
-                        queryInfo={queryInfo}
-                    />
-                    
+                    {
+                        this.state.submitClicked ? <ResultArea resultInfo={resultInfo}
+                            displayPagination={this.displayPagination.bind(this)}
+                            queryInfo={queryInfo}
+                        /> : ""
+                    }
                 </div>
             </div>
         )

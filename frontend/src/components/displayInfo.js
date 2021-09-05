@@ -3,8 +3,13 @@ import React from "react"
 const MAX_PER_PAGE = 200;
 
 class DisplayInfo extends React.Component {
+    state = {
+        'commonIngredients': [],
+        'commonCategories': [],
+        'message': '(May take a few minutes)',
+    }    
+
     componentDidMount() {
-        console.log(this.props.result)
         fetch('http://localhost:5000/all', {
             method: 'POST',
             headers: {
@@ -20,8 +25,7 @@ class DisplayInfo extends React.Component {
             mode: 'cors',
         })
             .then(response => response.json())
-            .then(response => {
-                console.log("SEND AGAIN", response)
+            .then(response => {                   
                 fetch('http://localhost:5000/info', {
                     method: 'POST',
                     headers: {
@@ -32,9 +36,16 @@ class DisplayInfo extends React.Component {
                 })
                 .then(response => response.json())
                 .then(response => {
-                    console.log("FINISHED!", response);
+                    this.setState({
+                        'commonIngredients': response.data.common_ingredients,
+                        'commonCategories': response.data.common_categories,
+                        'message': 'Finished'
+                    });
                 })
                 .catch(error => {
+                    this.setState({
+                        'message': 'Error'
+                    });                    
                     console.error(error);
                 })
             })
@@ -45,9 +56,49 @@ class DisplayInfo extends React.Component {
     }
 
     render() {
-        return(
-            <div>Info!</div>
-        )
+        if (this.state.commonIngredients.length > 0) {
+            return (
+                <div>
+                    <div className="infoTitle">
+                        <div>
+                            <strong>Common Ingredients</strong><br />
+                        </div>
+
+                        {"Ingredient | Frequency"}
+                    </div>
+                    <ul className="infoList">
+                        {this.state.commonIngredients.map(
+                            (ingred, index) =>
+                                <li key={index}>
+                                    {ingred[0]} <span className="infoValue"> {ingred[1]}</span>
+                                </li>
+                        )}
+                    </ul>
+                    <div className="infoTitle">
+                        <div>
+                            <strong>Common Categories</strong><br />
+                        </div>
+                        
+                        {"Category | Frequency"}
+                    </div>                    
+                    <ul className="infoList">
+                        {this.state.commonCategories.map(
+                            (ingred, index) =>
+                                <li key={index}>
+                                    {ingred[0]} <span className="infoValue"> {ingred[1]}</span>
+                                </li>
+                        )}
+                    </ul>                    
+
+                </div>
+            )            
+        }
+        else {
+            return (
+                <div className="infoTitle">{this.state.message}</div>
+            )
+        }
+
     }
 }
 

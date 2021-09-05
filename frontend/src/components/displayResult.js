@@ -1,6 +1,4 @@
 import React from 'react';
-import '../stylesheets/result.css'
-
 
 class DisplayResult extends React.Component {
     formatResult() {
