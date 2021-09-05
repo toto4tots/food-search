@@ -39,8 +39,8 @@ def get_payload(request, page):
             'sortOrder': 'asc',
             'requireAllWords': True,
             'ingredients': ' '.join(
-                list(map(lambda x: '+' + x.upper(), body['includeList'])) + 
-                list(map(lambda x: '-' + x.upper(), body['excludeList']))
+                list(map(lambda x: '+"' + x.upper() + '"', body['includeList'])) + 
+                list(map(lambda x: '-"' + x.upper() + '"', body['excludeList']))
             ),             
         }
     )
