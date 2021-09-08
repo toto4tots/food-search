@@ -50,6 +50,9 @@ class DisplayInfo extends React.Component {
                 })
             })
             .catch((error) => {
+                this.setState({
+                    'message': 'Error'
+                });                 
                 console.error(error);
             })
 
@@ -61,7 +64,7 @@ class DisplayInfo extends React.Component {
                 <div>
                     <div className="infoTitle">
                         <div>
-                            <strong>Common Ingredients</strong><br />
+                            <strong>Common Ingredients</strong>
                         </div>
 
                         {"Ingredient | Frequency"}
@@ -76,7 +79,7 @@ class DisplayInfo extends React.Component {
                     </ul>
                     <div className="infoTitle">
                         <div>
-                            <strong>Common Categories</strong><br />
+                            <strong>Common Categories</strong>
                         </div>
                         
                         {"Category | Frequency"}
@@ -89,7 +92,6 @@ class DisplayInfo extends React.Component {
                                 </li>
                         )}
                     </ul>                    
-
                 </div>
             )            
         }
@@ -98,7 +100,6 @@ class DisplayInfo extends React.Component {
                 <div className="infoTitle">{this.state.message}</div>
             )
         }
-
     }
 }
 

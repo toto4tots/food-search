@@ -7,8 +7,9 @@ function App() {
   return (
     <div>
       <div className="topnav">
-        <div>No Peanuts</div>
-        {/* <a>Public</a> */}
+        <div className="navTabs">
+          <span className="navTab"><a href="">code</a></span>
+        </div>
       </div>
       <div className="App">
         <SearchArea />

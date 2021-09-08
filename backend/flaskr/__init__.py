@@ -55,14 +55,14 @@ def create_app(test_config=None):
     @app.route('/info', methods=['POST'])
     def get_info():
         r_json = request.get_json()
-        category_list = helper.common_categories(r_json)
-        top_50 = helper.common_ingredients(r_json) # get 50 of the most common ingredients
+        common_categories = helper.common_categories(r_json) # get 50 of the most common categories
+        common_ingredients = helper.common_ingredients(r_json) # get 50 of the most common ingredients
 
         return jsonify({
             'success': True,
             'data': {
-                 'common_ingredients': top_50,
-                 'common_categories': category_list
+                 'common_ingredients': common_ingredients,
+                 'common_categories': common_categories
             }
         })
     
