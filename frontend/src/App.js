@@ -8,7 +8,7 @@ function App() {
     <div>
       <div className="topnav">
         <div className="navTabs">
-          <span className="navTab"><a href="">code</a></span>
+          <span className="navTab"><a href="https://github.com/toto4tots/food-search">code</a></span>
         </div>
       </div>
       <div className="App">
